@@ -6,7 +6,10 @@ class App extends Component {
   constructor() {
     super()
     this.socket = io()
-    this.state = {messages: []}
+    this.state = {
+      messages: [], // [{type: String, text: String, correction: Maybe String}]
+      correcting: null // Maybe Int
+    }
   }
 
   receiveMessage(message) {
@@ -22,6 +25,28 @@ class App extends Component {
   }
 
   render() {
+    if (typeof this.state.correcting === 'number') {
+      const originalMessage = this.state.messages[this.state.correcting].text
+      return (
+        <div className="text-center">
+          <h2>Correction</h2>
+          <div>{originalMessage}</div>
+          <input ref="correctionInput" defaultValue={originalMessage} />
+          <button onClick={() => {
+            this.sendMessage({
+              type: 'CORRECTION',
+              text: originalMessage,
+              correction: this.refs.correctionInput.value
+            })
+            this.setState({correcting: null})
+          }}>Done</button>
+          <button onClick={() => {
+            this.setState({correcting: null})
+          }}>Cancel</button>
+        </div>
+      )
+    }
+
     return (
       <div className="text-center">
         <form onSubmit={(e) => {
@@ -46,7 +71,13 @@ class App extends Component {
                 </li>
               )
             case 'MESSAGE':
-              return <li key={i}>{message.text}</li>
+              return (
+                <li key={i} onClick={() => {
+                  this.setState({correcting: i})
+                }}>
+                  {message.text}
+                </li>
+              )
             default:
               return <li key={i}>INVALID MESSAGE TYPE</li>
           }
