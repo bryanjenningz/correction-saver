@@ -13,8 +13,8 @@ class App extends Component {
     this.setState({messages: [...this.state.messages, message]})
   }
 
-  sendMessage(text) {
-    this.socket.emit('sendMessage', {text})
+  sendMessage(message) {
+    this.socket.emit('sendMessage', message)
   }
 
   componentWillMount() {
@@ -27,14 +27,30 @@ class App extends Component {
         <form onSubmit={(e) => {
           e.preventDefault()
           if (this.refs.input.value.trim()) {
-            this.sendMessage(this.refs.input.value.trim())
+            this.sendMessage({
+              type: 'MESSAGE',
+              text: this.refs.input.value.trim()
+            })
             this.refs.input.value = ''
           }
         }}>
           <input ref="input" />
-          <input type="submit" hidden />
         </form>
-        {this.state.messages.map((message, i) => <li key={i}>{message.text}</li>)}
+        {this.state.messages.map((message, i) => {
+          switch (message.type) {
+            case 'CORRECTION':
+              return (
+                <li key={i} className="row">
+                  <div className="col-xs-6">{message.text}</div>
+                  <div className="col-xs-6">{message.correction}</div>
+                </li>
+              )
+            case 'MESSAGE':
+              return <li key={i}>{message.text}</li>
+            default:
+              return <li key={i}>INVALID MESSAGE TYPE</li>
+          }
+        })}
       </div>
     )
   }
