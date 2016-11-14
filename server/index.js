@@ -7,9 +7,14 @@ app.use(express.static('dist'))
 
 io.on('connection', (socket) => {
   console.log('user connected')
-  
+
   socket.on('disconnect', () => {
     console.log('user disconnected')
+  })
+
+  socket.on('sendMessage', (message) => {
+    console.log(`Message sent: ${message.text}`)
+    io.emit('receiveMessage', message)
   })
 })
 
