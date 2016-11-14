@@ -65,43 +65,49 @@ export default class Chat extends Component {
     }
 
     return (
-      <div className="text-center">
-        <form onSubmit={(e) => {
-          e.preventDefault()
-          if (this.refs.input.value.trim()) {
-            this.sendMessage({
-              type: 'MESSAGE',
-              text: this.refs.input.value.trim()
-            })
-            this.refs.input.value = ''
-          }
-        }}>
-          <input ref="input" />
-        </form>
-        <div>
-          {this.state.messages.map((message, i) => {
-            switch (message.type) {
-              case 'CORRECTION':
-                return (
-                  <li key={i} className="row">
-                    <div className="col-xs-6">{message.text}</div>
-                    <div className="col-xs-6">{message.correction}</div>
-                    <button className="pull-right">Save</button>
-                  </li>
-                )
-              case 'MESSAGE':
-                return (
-                  <li key={i}>
-                    <div onClick={() => {
-                      this.setState({correcting: i})
-                    }}>{message.text}</div>
-                    <button className="pull-right" onClick={this.saveMessage.bind(this, i)}>Save</button>
-                  </li>
-                )
-              default:
-                return <li key={i}>INVALID MESSAGE TYPE</li>
+      <div>
+        <div className="row">
+          <form className="col-sm-offset-4 col-sm-4" onSubmit={(e) => {
+            e.preventDefault()
+            if (this.refs.input.value.trim()) {
+              this.sendMessage({
+                type: 'MESSAGE',
+                text: this.refs.input.value.trim()
+              })
+              this.refs.input.value = ''
             }
-          })}
+          }}>
+            <input className="form-control" ref="input" />
+          </form>
+        </div>
+        <div className="row">
+          <div className="col-sm-offset-4 col-sm-4">
+            {this.state.messages.map((message, i) => {
+              switch (message.type) {
+                case 'CORRECTION':
+                  return (
+                    <div key={i} className="row">
+                      <div className="col-xs-6">{message.text}</div>
+                      <div className="col-xs-6">{message.correction}</div>
+                      <button onClick={this.saveMessage.bind(this, i)}>Save</button>
+                    </div>
+                  )
+                case 'MESSAGE':
+                  return (
+                    <div key={i} className="well well-sm clearfix">
+                      <div className="col-xs-11" onClick={() => {
+                        this.setState({correcting: i})
+                      }}>{message.text}</div>
+                      <div className="col-xs-1">
+                        <button className="btn btn-primary btn-xs" onClick={this.saveMessage.bind(this, i)}><i className="glyphicon glyphicon-save"></i></button>
+                      </div>
+                    </div>
+                  )
+                default:
+                  return <div key={i}>INVALID MESSAGE TYPE</div>
+              }
+            })}
+          </div>
         </div>
         {this.state.savedMessages.length > 0 ?
           <div>
