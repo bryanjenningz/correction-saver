@@ -8,6 +8,7 @@ class App extends Component {
     this.socket = io()
     this.state = {
       messages: [], // [{type: String, text: String, correction: Maybe String}]
+      savedMessages: [], // [{type: String, text: String, correction: Maybe String}]
       correcting: null // Maybe Int
     }
   }
@@ -18,6 +19,24 @@ class App extends Component {
 
   sendMessage(message) {
     this.socket.emit('sendMessage', message)
+  }
+
+  saveMessage(i) {
+    this.setState({
+      savedMessages: [
+        ...this.state.savedMessages,
+        this.state.messages[i]
+      ]
+    })
+  }
+
+  removeSavedMessage(i) {
+    this.setState({
+      savedMessages: [
+        ...this.state.savedMessages.slice(0, i),
+        ...this.state.savedMessages.slice(i + 1)
+      ]
+    })
   }
 
   componentWillMount() {
@@ -61,27 +80,56 @@ class App extends Component {
         }}>
           <input ref="input" />
         </form>
-        {this.state.messages.map((message, i) => {
-          switch (message.type) {
-            case 'CORRECTION':
-              return (
-                <li key={i} className="row">
-                  <div className="col-xs-6">{message.text}</div>
-                  <div className="col-xs-6">{message.correction}</div>
-                </li>
-              )
-            case 'MESSAGE':
-              return (
-                <li key={i} onClick={() => {
-                  this.setState({correcting: i})
-                }}>
-                  {message.text}
-                </li>
-              )
-            default:
-              return <li key={i}>INVALID MESSAGE TYPE</li>
-          }
-        })}
+        <div>
+          {this.state.messages.map((message, i) => {
+            switch (message.type) {
+              case 'CORRECTION':
+                return (
+                  <li key={i} className="row">
+                    <div className="col-xs-6">{message.text}</div>
+                    <div className="col-xs-6">{message.correction}</div>
+                    <button className="pull-right">Save</button>
+                  </li>
+                )
+              case 'MESSAGE':
+                return (
+                  <li key={i}>
+                    <div onClick={() => {
+                      this.setState({correcting: i})
+                    }}>{message.text}</div>
+                    <button className="pull-right" onClick={this.saveMessage.bind(this, i)}>Save</button>
+                  </li>
+                )
+              default:
+                return <li key={i}>INVALID MESSAGE TYPE</li>
+            }
+          })}
+        </div>
+        {this.state.savedMessages.length > 0 ?
+          <div>
+            <h2>Saved Messages</h2>
+            <div>
+              {this.state.savedMessages.map((message, i) => {
+                switch (message.type) {
+                  case 'CORRECTION':
+                    return (
+                      <li key={i} className="row" onClick={this.removeSavedMessage.bind(this, i)}>
+                        <div className="col-xs-6">{message.text}</div>
+                        <div className="col-xs-6">{message.correction}</div>
+                      </li>
+                    )
+                  case 'MESSAGE':
+                    return (
+                      <li key={i} onClick={this.removeSavedMessage.bind(this, i)}>
+                        {message.text}
+                      </li>
+                    )
+                  default:
+                    return <li key={i}>INVALID MESSAGE TYPE</li>
+                }
+              })}
+            </div>
+          </div> : null}
       </div>
     )
   }
