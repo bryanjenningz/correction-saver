@@ -92,7 +92,7 @@ export default class Chat extends Component {
                   return (
                     <div key={i} className="well well-sm clearfix">
                       <div className="col-xs-5">{message.text}</div>
-                      <div className="col-xs-6 text-primary">{message.correction}</div>
+                      <div className="col-xs-6 text-success">{message.correction}</div>
                       <div className="col-xs-1">
                         <button className="btn btn-primary btn-xs" onClick={this.saveMessage.bind(this, i)}><i className="glyphicon glyphicon-save" /></button>
                       </div>
@@ -116,26 +116,32 @@ export default class Chat extends Component {
           </div>
         </div>
         {this.state.savedMessages.length > 0 ?
-          <div>
-            <h2>Saved Messages</h2>
-            <div>
+          <div className="row">
+            <div className="col-sm-offset-4 col-sm-4">
+              <h2 className="text-center">Saved Messages</h2>
               {this.state.savedMessages.map((message, i) => {
                 switch (message.type) {
                   case 'CORRECTION':
                     return (
-                      <li key={i} className="row" onClick={this.removeSavedMessage.bind(this, i)}>
-                        <div className="col-xs-6">{message.text}</div>
-                        <div className="col-xs-6">{message.correction}</div>
-                      </li>
+                      <div key={i} className="well well-sm clearfix">
+                        <div className="col-xs-5">{message.text}</div>
+                        <div className="col-xs-6 text-success">{message.correction}</div>
+                        <span className="pull-right">
+                          <i onClick={this.removeSavedMessage.bind(this, i)} className="glyphicon glyphicon-remove" />
+                        </span>
+                      </div>
                     )
                   case 'MESSAGE':
                     return (
-                      <li key={i} onClick={this.removeSavedMessage.bind(this, i)}>
+                      <div key={i} className="well well-sm clearfix">
                         {message.text}
-                      </li>
+                        <span className="pull-right">
+                          <i onClick={this.removeSavedMessage.bind(this, i)} className="glyphicon glyphicon-remove" />
+                        </span>
+                      </div>
                     )
                   default:
-                    return <li key={i}>INVALID MESSAGE TYPE</li>
+                    return <div key={i}>INVALID MESSAGE TYPE</div>
                 }
               })}
             </div>
