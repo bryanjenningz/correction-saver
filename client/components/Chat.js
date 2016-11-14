@@ -90,10 +90,12 @@ export default class Chat extends Component {
               switch (message.type) {
                 case 'CORRECTION':
                   return (
-                    <div key={i} className="row">
-                      <div className="col-xs-6">{message.text}</div>
-                      <div className="col-xs-6">{message.correction}</div>
-                      <button onClick={this.saveMessage.bind(this, i)}>Save</button>
+                    <div key={i} className="well well-sm clearfix">
+                      <div className="col-xs-5">{message.text}</div>
+                      <div className="col-xs-6 text-primary">{message.correction}</div>
+                      <div className="col-xs-1">
+                        <button className="btn btn-primary btn-xs" onClick={this.saveMessage.bind(this, i)}><i className="glyphicon glyphicon-save" /></button>
+                      </div>
                     </div>
                   )
                 case 'MESSAGE':
