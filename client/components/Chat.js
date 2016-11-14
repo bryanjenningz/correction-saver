@@ -45,21 +45,25 @@ export default class Chat extends Component {
     if (typeof this.state.correcting === 'number') {
       const originalMessage = this.state.messages[this.state.correcting].text
       return (
-        <div className="text-center">
-          <h2>Correction</h2>
-          <div>{originalMessage}</div>
-          <input ref="correctionInput" defaultValue={originalMessage} />
-          <button onClick={() => {
-            this.sendMessage({
-              type: 'CORRECTION',
-              text: originalMessage,
-              correction: this.refs.correctionInput.value
-            })
-            this.setState({correcting: null})
-          }}>Done</button>
-          <button onClick={() => {
-            this.setState({correcting: null})
-          }}>Cancel</button>
+        <div className="col-sm-offset-4 col-sm-4">
+          <h2 className="text-center">Correction</h2>
+          <div className="text-center">{originalMessage}</div>
+          <div className="col-xs-8">
+            <input className="form-control" ref="correctionInput" defaultValue={originalMessage} />
+          </div>
+          <div className="col-xs-4">
+            <button className="btn btn-success" onClick={() => {
+              this.sendMessage({
+                type: 'CORRECTION',
+                text: originalMessage,
+                correction: this.refs.correctionInput.value
+              })
+              this.setState({correcting: null})
+            }}><i className="glyphicon glyphicon-ok" /></button>
+            <button className="btn btn-danger" onClick={() => {
+              this.setState({correcting: null})
+            }}><i className="glyphicon glyphicon-remove" /></button>
+          </div>
         </div>
       )
     }
@@ -99,7 +103,7 @@ export default class Chat extends Component {
                         this.setState({correcting: i})
                       }}>{message.text}</div>
                       <div className="col-xs-1">
-                        <button className="btn btn-primary btn-xs" onClick={this.saveMessage.bind(this, i)}><i className="glyphicon glyphicon-save"></i></button>
+                        <button className="btn btn-primary btn-xs" onClick={this.saveMessage.bind(this, i)}><i className="glyphicon glyphicon-save" /></button>
                       </div>
                     </div>
                   )
