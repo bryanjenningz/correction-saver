@@ -1,5 +1,26 @@
 import React, {Component, PropTypes} from 'react'
 
+const messageType = PropTypes.shape({
+  type: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+  correction: PropTypes.string
+})
+
+const SavedMessages = ({messages, onRemove}) =>
+  <div className="row">
+    <div className="col-sm-offset-4 col-sm-4">
+      <h2 className="text-center">Saved Messages</h2>
+      {messages.map((message, i) =>
+        <SavedMessage key={i} message={message} onRemove={() => onRemove(i)} />
+      )}
+    </div>
+  </div>
+
+SavedMessages.propTypes = {
+  messages: PropTypes.arrayOf(messageType).isRequired,
+  onRemove: PropTypes.func.isRequired
+}
+
 const SavedMessage = ({message, onRemove}) => {
   switch (message.type) {
     case 'CORRECTION':
@@ -27,11 +48,7 @@ const SavedMessage = ({message, onRemove}) => {
 }
 
 SavedMessage.propTypes = {
-  message: PropTypes.shape({
-    type: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
-    correction: PropTypes.string
-  }).isRequired,
+  message: messageType.isRequired,
   onRemove: PropTypes.func.isRequired
 }
 
@@ -151,14 +168,7 @@ export default class Chat extends Component {
           </div>
         </div>
         {this.state.savedMessages.length > 0 ?
-          <div className="row">
-            <div className="col-sm-offset-4 col-sm-4">
-              <h2 className="text-center">Saved Messages</h2>
-              {this.state.savedMessages.map((message, i) =>
-                <SavedMessage key={i} message={message} onRemove={this.removeSavedMessage.bind(this, i)} />
-              )}
-            </div>
-          </div> : null}
+          <SavedMessages messages={this.state.savedMessages} onRemove={this.removeSavedMessage.bind(this)} /> : null}
       </div>
     )
   }
