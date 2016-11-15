@@ -1,16 +1,14 @@
-import React, {Component} from 'react'
-
-const people = [
-  {name: 'Abe', speaks: 'Mandarin', learning: 'English'},
-  {name: 'Brad', speaks: 'English', learning: 'Mandarin'},
-  {name: 'Carl', speaks: 'Spanish', learning: 'English'},
-]
+import React, {Component, PropTypes} from 'react'
 
 export default class People extends Component {
+  constructor(props) {
+    super(props)
+  }
+
   render() {
     return (
       <div className="col-sm-offset-4 col-sm-4">
-        {people.map((person, i) =>
+        {this.props.people.map((person, i) =>
           <a key={i} href={`#/chat/${i}`}>
             <div className="row">
               <div className="col-xs-3">
@@ -27,4 +25,12 @@ export default class People extends Component {
       </div>
     )
   }
+}
+
+People.propTypes = {
+  people: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    speaks: PropTypes.string.isRequired,
+    learning: PropTypes.string.isRequired
+  })).isRequired
 }
