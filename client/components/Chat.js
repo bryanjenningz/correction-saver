@@ -80,6 +80,43 @@ Correction.propTypes = {
   onCancel: PropTypes.func.isRequired
 }
 
+const Messages = ({messages, onSave, onCorrect}) =>
+  <div className="row">
+    <div className="col-sm-offset-4 col-sm-4">
+      {messages.map((message, i) => {
+        switch (message.type) {
+          case 'CORRECTION':
+            return (
+              <div key={i} className="well well-sm clearfix">
+                <div className="col-xs-5">{message.text}</div>
+                <div className="col-xs-6 text-success">{message.correction}</div>
+                <div className="col-xs-1">
+                  <button className="btn btn-primary btn-xs" onClick={() => onSave(i)}><i className="glyphicon glyphicon-save" /></button>
+                </div>
+              </div>
+            )
+          case 'MESSAGE':
+            return (
+              <div key={i} className="well well-sm clearfix">
+                <div className="col-xs-11" onClick={() => onCorrect(i)}>{message.text}</div>
+                <div className="col-xs-1">
+                  <button className="btn btn-primary btn-xs" onClick={() => onSave(i)}><i className="glyphicon glyphicon-save" /></button>
+                </div>
+              </div>
+            )
+          default:
+            return <div key={i}>INVALID MESSAGE TYPE</div>
+        }
+      })}
+    </div>
+  </div>
+
+Messages.propTypes = {
+  messages: PropTypes.arrayOf(messageType).isRequired,
+  onSave: PropTypes.func.isRequired,
+  onCorrect: PropTypes.func.isRequired
+}
+
 export default class Chat extends Component {
   constructor() {
     super()
@@ -155,39 +192,14 @@ export default class Chat extends Component {
             <input className="form-control" ref="input" />
           </form>
         </div>
-        <div className="row">
-          <div className="col-sm-offset-4 col-sm-4">
-            {this.state.messages.map((message, i) => {
-              switch (message.type) {
-                case 'CORRECTION':
-                  return (
-                    <div key={i} className="well well-sm clearfix">
-                      <div className="col-xs-5">{message.text}</div>
-                      <div className="col-xs-6 text-success">{message.correction}</div>
-                      <div className="col-xs-1">
-                        <button className="btn btn-primary btn-xs" onClick={this.saveMessage.bind(this, i)}><i className="glyphicon glyphicon-save" /></button>
-                      </div>
-                    </div>
-                  )
-                case 'MESSAGE':
-                  return (
-                    <div key={i} className="well well-sm clearfix">
-                      <div className="col-xs-11" onClick={() => {
-                        this.setState({correcting: i})
-                      }}>{message.text}</div>
-                      <div className="col-xs-1">
-                        <button className="btn btn-primary btn-xs" onClick={this.saveMessage.bind(this, i)}><i className="glyphicon glyphicon-save" /></button>
-                      </div>
-                    </div>
-                  )
-                default:
-                  return <div key={i}>INVALID MESSAGE TYPE</div>
-              }
-            })}
-          </div>
-        </div>
+        <Messages
+          messages={this.state.messages}
+          onSave={this.saveMessage.bind(this)}
+          onCorrect={(i) => this.setState({correcting: i})} />
         {this.state.savedMessages.length > 0 ?
-          <SavedMessages messages={this.state.savedMessages} onRemove={this.removeSavedMessage.bind(this)} /> : null}
+          <SavedMessages
+            messages={this.state.savedMessages}
+            onRemove={this.removeSavedMessage.bind(this)} /> : null}
       </div>
     )
   }
