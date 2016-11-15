@@ -54,15 +54,15 @@ SavedMessage.propTypes = {
   onRemove: PropTypes.func.isRequired
 }
 
-const Correction = ({originalMessage, onAccept, onCancel}) => {
+const Correction = ({originalText, onAccept, onCancel}) => {
   let correctionInput
 
   return (
     <div className="col-sm-offset-4 col-sm-4">
       <h2 className="text-center">Correction</h2>
-      <div className="text-center">{originalMessage}</div>
+      <div className="text-center">{originalText}</div>
       <div className="col-xs-8">
-        <input className="form-control" ref={(node) => correctionInput = node} defaultValue={originalMessage} />
+        <input className="form-control" ref={(node) => correctionInput = node} defaultValue={originalText} />
       </div>
       <div className="col-xs-4">
         <button className="btn btn-success" onClick={() => onAccept(correctionInput.value)}>
@@ -77,7 +77,7 @@ const Correction = ({originalMessage, onAccept, onCancel}) => {
 }
 
 Correction.propTypes = {
-  originalMessage: PropTypes.string.isRequired,
+  originalText: PropTypes.string.isRequired,
   onAccept: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired
 }
@@ -154,25 +154,33 @@ class Chat extends Component {
     super()
     this.socket = io()
     this.state = {
-      messages: [], // [{type: String, text: String, correction: Maybe String}]
-      savedMessages: [], // [{type: String, text: String, correction: Maybe String}]
+      byReceiverId: {},
+      savedMessages: [],
       correcting: null // Maybe Int
     }
   }
 
   receiveMessage(message) {
-    this.setState({messages: [...this.state.messages, message]})
+    const {receiverId} = message
+    const messages = this.state.byReceiverId[receiverId] || []
+
+    this.setState({
+      byReceiverId: {
+        ...this.state.byReceiverId,
+        [receiverId]: [...messages, message]
+      }
+    })
   }
 
   sendMessage(message) {
     this.socket.emit('sendMessage', message)
   }
 
-  saveMessage(i) {
+  saveMessage(receiverId, i) {
     this.setState({
       savedMessages: [
         ...this.state.savedMessages,
-        this.state.messages[i]
+        this.state.byReceiverId[receiverId][i]
       ]
     })
   }
@@ -191,15 +199,19 @@ class Chat extends Component {
   }
 
   render() {
+    const receiverId = this.props.params.receiverId
+    const senderId = '-1'
+    const messages = this.state.byReceiverId[receiverId] || []
+
     if (typeof this.state.correcting === 'number') {
-      const originalMessage = this.state.messages[this.state.correcting].text
+      const originalMessage = messages[this.state.correcting]
       return (
         <Correction
-          originalMessage={originalMessage}
+          originalText={originalMessage.text}
           onAccept={(correctionText) => {
             this.sendMessage({
+              ...originalMessage,
               type: 'CORRECTION',
-              text: originalMessage,
               correction: correctionText
             })
             this.setState({correcting: null})
@@ -208,9 +220,6 @@ class Chat extends Component {
       )
     }
 
-    const receiverId = this.props.params.receiverId
-    const senderId = '-1'
-
     return (
       <div>
         <MessageInput
@@ -218,8 +227,8 @@ class Chat extends Component {
           receiverId={receiverId}
           senderId={senderId} />
         <Messages
-          messages={this.state.messages}
-          onSave={this.saveMessage.bind(this)}
+          messages={messages}
+          onSave={this.saveMessage.bind(this, receiverId)}
           onCorrect={(i) => this.setState({correcting: i})} />
         {this.state.savedMessages.length > 0 ?
           <SavedMessages
