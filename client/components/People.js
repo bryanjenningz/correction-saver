@@ -11,16 +11,18 @@ export default class People extends Component {
     return (
       <div className="col-sm-offset-4 col-sm-4">
         {people.map((person, i) =>
-          <div key={i} className="row">
-            <div className="col-xs-3">
-              <img className="thumbnail" src="default.png" style={{width: 50, height: 50}} />
+          <a key={i} href={`#/chat/${i}`}>
+            <div className="row">
+              <div className="col-xs-3">
+                <img className="thumbnail" src="default.png" style={{width: 50, height: 50}} />
+              </div>
+              <div className="col-xs-9">
+                <h5 className="col-xs-4">Name: {person.name}</h5>
+                <h5 className="col-xs-4">Speaks: {person.speaks}</h5>
+                <h5 className="col-xs-4">Learning: {person.learning}</h5>
+              </div>
             </div>
-            <div className="col-xs-9">
-              <h5 className="col-xs-4">Name: {person.name}</h5>
-              <h5 className="col-xs-4">Speaks: {person.speaks}</h5>
-              <h5 className="col-xs-4">Learning: {person.learning}</h5>
-            </div>
-          </div>
+          </a>
         )}
       </div>
     )
