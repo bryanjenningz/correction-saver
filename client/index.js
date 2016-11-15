@@ -1,16 +1,9 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {render} from 'react-dom'
 import {Router, Route, IndexRoute, hashHistory} from 'react-router'
 import Chat from './components/Chat'
 import People from './components/People'
-
-const Header = ({children}) =>
-  <div>
-    <div>
-      <a href="#/">Home</a>
-    </div>
-    {children}
-  </div>
+import Header from './components/Header'
 
 const routes =
   <Router history={hashHistory}>
@@ -19,17 +12,5 @@ const routes =
       <Route path="/chat/:person" component={Chat} />
     </Route>
   </Router>
-
-
-class App extends Component {
-  render() {
-    return (
-      <div>
-        <Chat />
-        <People />
-      </div>
-    )
-  }
-}
 
 render(routes, document.querySelector('#root'))
