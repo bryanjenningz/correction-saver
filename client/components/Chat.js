@@ -1,4 +1,39 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
+
+const SavedMessage = ({message, onRemove}) => {
+  switch (message.type) {
+    case 'CORRECTION':
+      return (
+        <div className="well well-sm clearfix">
+          <div className="col-xs-5">{message.text}</div>
+          <div className="col-xs-6 text-success">{message.correction}</div>
+          <span className="pull-right">
+            <i onClick={onRemove} className="glyphicon glyphicon-remove" />
+          </span>
+        </div>
+      )
+    case 'MESSAGE':
+      return (
+        <div className="well well-sm clearfix">
+          {message.text}
+          <span className="pull-right">
+            <i onClick={onRemove} className="glyphicon glyphicon-remove" />
+          </span>
+        </div>
+      )
+    default:
+      return <div>INVALID MESSAGE TYPE</div>
+  }
+}
+
+SavedMessage.propTypes = {
+  message: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+    correction: PropTypes.string
+  }).isRequired,
+  onRemove: PropTypes.func.isRequired
+}
 
 export default class Chat extends Component {
   constructor() {
@@ -119,31 +154,9 @@ export default class Chat extends Component {
           <div className="row">
             <div className="col-sm-offset-4 col-sm-4">
               <h2 className="text-center">Saved Messages</h2>
-              {this.state.savedMessages.map((message, i) => {
-                switch (message.type) {
-                  case 'CORRECTION':
-                    return (
-                      <div key={i} className="well well-sm clearfix">
-                        <div className="col-xs-5">{message.text}</div>
-                        <div className="col-xs-6 text-success">{message.correction}</div>
-                        <span className="pull-right">
-                          <i onClick={this.removeSavedMessage.bind(this, i)} className="glyphicon glyphicon-remove" />
-                        </span>
-                      </div>
-                    )
-                  case 'MESSAGE':
-                    return (
-                      <div key={i} className="well well-sm clearfix">
-                        {message.text}
-                        <span className="pull-right">
-                          <i onClick={this.removeSavedMessage.bind(this, i)} className="glyphicon glyphicon-remove" />
-                        </span>
-                      </div>
-                    )
-                  default:
-                    return <div key={i}>INVALID MESSAGE TYPE</div>
-                }
-              })}
+              {this.state.savedMessages.map((message, i) =>
+                <SavedMessage key={i} message={message} onRemove={this.removeSavedMessage.bind(this, i)} />
+              )}
             </div>
           </div> : null}
       </div>
