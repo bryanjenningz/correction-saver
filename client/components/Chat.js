@@ -3,6 +3,8 @@ import React, {Component, PropTypes} from 'react'
 const messageType = PropTypes.shape({
   type: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
+  receiverId: PropTypes.string.isRequired,
+  senderId: PropTypes.string.isRequired,
   correction: PropTypes.string
 })
 
@@ -80,8 +82,9 @@ Correction.propTypes = {
   onCancel: PropTypes.func.isRequired
 }
 
-const MessageInput = ({onSubmit}) => {
+const MessageInput = ({onSubmit, receiverId, senderId}) => {
   let input
+  console.log(receiverId, senderId)
 
   return (
     <div className="row">
@@ -90,7 +93,9 @@ const MessageInput = ({onSubmit}) => {
         if (input.value.trim()) {
           onSubmit({
             type: 'MESSAGE',
-            text: input.value.trim()
+            text: input.value.trim(),
+            receiverId,
+            senderId
           })
           input.value = ''
         }
@@ -102,7 +107,9 @@ const MessageInput = ({onSubmit}) => {
 }
 
 MessageInput.propTypes = {
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
+  receiverId: PropTypes.string.isRequired,
+  senderId: PropTypes.string.isRequired
 }
 
 const Messages = ({messages, onSave, onCorrect}) =>
@@ -142,7 +149,7 @@ Messages.propTypes = {
   onCorrect: PropTypes.func.isRequired
 }
 
-export default class Chat extends Component {
+class Chat extends Component {
   constructor() {
     super()
     this.socket = io()
@@ -201,9 +208,15 @@ export default class Chat extends Component {
       )
     }
 
+    const receiverId = this.props.params.receiverId
+    const senderId = '-1'
+
     return (
       <div>
-        <MessageInput onSubmit={this.sendMessage.bind(this)} />
+        <MessageInput
+          onSubmit={this.sendMessage.bind(this)}
+          receiverId={receiverId}
+          senderId={senderId} />
         <Messages
           messages={this.state.messages}
           onSave={this.saveMessage.bind(this)}
@@ -216,3 +229,5 @@ export default class Chat extends Component {
     )
   }
 }
+
+export default Chat

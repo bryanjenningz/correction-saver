@@ -14,7 +14,7 @@ const routes =
   <Router history={hashHistory}>
     <Route path="/" component={Header}>
       <IndexRoute component={() => <People people={people} />} />
-      <Route path="/chat/:person" component={Chat} />
+      <Route path="/chat/:receiverId" component={Chat} />
     </Route>
   </Router>
 
