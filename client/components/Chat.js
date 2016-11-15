@@ -80,6 +80,31 @@ Correction.propTypes = {
   onCancel: PropTypes.func.isRequired
 }
 
+const MessageInput = ({onSubmit}) => {
+  let input
+
+  return (
+    <div className="row">
+      <form className="col-sm-offset-4 col-sm-4" onSubmit={(e) => {
+        e.preventDefault()
+        if (input.value.trim()) {
+          onSubmit({
+            type: 'MESSAGE',
+            text: input.value.trim()
+          })
+          input.value = ''
+        }
+      }}>
+        <input className="form-control" ref={(node) => input = node} />
+      </form>
+    </div>
+  )
+}
+
+MessageInput.propTypes = {
+  onSubmit: PropTypes.func.isRequired
+}
+
 const Messages = ({messages, onSave, onCorrect}) =>
   <div className="row">
     <div className="col-sm-offset-4 col-sm-4">
@@ -178,20 +203,7 @@ export default class Chat extends Component {
 
     return (
       <div>
-        <div className="row">
-          <form className="col-sm-offset-4 col-sm-4" onSubmit={(e) => {
-            e.preventDefault()
-            if (this.refs.input.value.trim()) {
-              this.sendMessage({
-                type: 'MESSAGE',
-                text: this.refs.input.value.trim()
-              })
-              this.refs.input.value = ''
-            }
-          }}>
-            <input className="form-control" ref="input" />
-          </form>
-        </div>
+        <MessageInput onSubmit={this.sendMessage.bind(this)} />
         <Messages
           messages={this.state.messages}
           onSave={this.saveMessage.bind(this)}
