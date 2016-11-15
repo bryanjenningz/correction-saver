@@ -1,19 +1,24 @@
 import React, {Component} from 'react'
 
+const people = [
+  {name: 'Abe', speaks: 'Mandarin', learning: 'English'},
+  {name: 'Brad', speaks: 'English', learning: 'Mandarin'},
+  {name: 'Carl', speaks: 'Spanish', learning: 'English'},
+]
+
 export default class People extends Component {
   render() {
-    const people = this.props.people
     return (
       <div className="col-sm-offset-4 col-sm-4">
-        {[1, 2, 3, 4].map((person, i) =>
+        {people.map((person, i) =>
           <div key={i} className="row">
             <div className="col-xs-3">
               <img className="thumbnail" src="default.png" style={{width: 50, height: 50}} />
             </div>
             <div className="col-xs-9">
-              <h5 className="col-xs-4">Name</h5>
-              <h5 className="col-xs-4">Speaks</h5>
-              <h5 className="col-xs-4">Learning</h5>
+              <h5 className="col-xs-4">Name: {person.name}</h5>
+              <h5 className="col-xs-4">Speaks: {person.speaks}</h5>
+              <h5 className="col-xs-4">Learning: {person.learning}</h5>
             </div>
           </div>
         )}
