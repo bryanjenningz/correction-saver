@@ -52,6 +52,34 @@ SavedMessage.propTypes = {
   onRemove: PropTypes.func.isRequired
 }
 
+const Correction = ({originalMessage, onAccept, onCancel}) => {
+  let correctionInput
+
+  return (
+    <div className="col-sm-offset-4 col-sm-4">
+      <h2 className="text-center">Correction</h2>
+      <div className="text-center">{originalMessage}</div>
+      <div className="col-xs-8">
+        <input className="form-control" ref={(node) => correctionInput = node} defaultValue={originalMessage} />
+      </div>
+      <div className="col-xs-4">
+        <button className="btn btn-success" onClick={() => onAccept(correctionInput.value)}>
+          <i className="glyphicon glyphicon-ok" />
+        </button>
+        <button className="btn btn-danger" onClick={onCancel}>
+          <i className="glyphicon glyphicon-remove" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+Correction.propTypes = {
+  originalMessage: PropTypes.string.isRequired,
+  onAccept: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired
+}
+
 export default class Chat extends Component {
   constructor() {
     super()
@@ -97,26 +125,17 @@ export default class Chat extends Component {
     if (typeof this.state.correcting === 'number') {
       const originalMessage = this.state.messages[this.state.correcting].text
       return (
-        <div className="col-sm-offset-4 col-sm-4">
-          <h2 className="text-center">Correction</h2>
-          <div className="text-center">{originalMessage}</div>
-          <div className="col-xs-8">
-            <input className="form-control" ref="correctionInput" defaultValue={originalMessage} />
-          </div>
-          <div className="col-xs-4">
-            <button className="btn btn-success" onClick={() => {
-              this.sendMessage({
-                type: 'CORRECTION',
-                text: originalMessage,
-                correction: this.refs.correctionInput.value
-              })
-              this.setState({correcting: null})
-            }}><i className="glyphicon glyphicon-ok" /></button>
-            <button className="btn btn-danger" onClick={() => {
-              this.setState({correcting: null})
-            }}><i className="glyphicon glyphicon-remove" /></button>
-          </div>
-        </div>
+        <Correction
+          originalMessage={originalMessage}
+          onAccept={(correctionText) => {
+            this.sendMessage({
+              type: 'CORRECTION',
+              text: originalMessage,
+              correction: correctionText
+            })
+            this.setState({correcting: null})
+          }}
+          onCancel={() => this.setState({correcting: null})} />
       )
     }
 
