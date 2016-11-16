@@ -150,8 +150,8 @@ Messages.propTypes = {
 }
 
 class Chat extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.socket = io()
     this.state = {
       byReceiverId: {},
